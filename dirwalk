@@ -5,6 +5,12 @@ ARGV=( "$@" )
 ARGC=$#
 
 if [ $# -eq 0 ]; then
+        CPATH="./"
+        ARGV[1]="echo"
+        ARGC=2
+fi
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];then
     echo "Illegal number of parameters"
     echo "USAGE: $0 [path] cmd1 [cmd2 [cmd3 [cmd4]]]"
     echo "   each node will be passed through cmd1-cmdN "
@@ -21,8 +27,8 @@ if [ $# -eq 0 ]; then
     echo "   mv One.zip /home/storage"
     echo "   unzip Two.zip"
     echo "   mv Two.zip /home/storage"
+    exit 0
 fi
-
 for node in `find ${CPATH}`;
 do
         PREVSTAT=0;
@@ -39,8 +45,7 @@ do
                         ${ARGV[$icmd]} $node
                 fi
                 PREVSTAT=$?
-                echo " "
-
+                #echo " "
         done
 done
 
