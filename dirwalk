@@ -1,0 +1,46 @@
+#!/bin/bash
+
+CPATH=$1
+ARGV=( "$@" )
+ARGC=$#
+
+if [ $# -eq 0 ]; then
+    echo "Illegal number of parameters"
+    echo "USAGE: $0 [path] cmd1 [cmd2 [cmd3 [cmd4]]]"
+    echo "   each node will be passed through cmd1-cmdN "
+    echo "   next cmd will run if previous was success"
+    echo ""
+    echo "   e.g.:  dirwalk ./*.zip 'unzip' 'rm'  will be expanden as "
+    echo "   unzip One.zip"
+    echo "   rm One.zip"
+    echo "   unzip Two.zip"
+    echo "   rm Two.zip"
+    echo ""
+    echo "   e.g.:  dirwalk ./*.zip 'unzip' 'mv @1 /home/storage'  will be expanden as "
+    echo "   unzip One.zip"
+    echo "   mv One.zip /home/storage"
+    echo "   unzip Two.zip"
+    echo "   mv Two.zip /home/storage"
+fi
+
+for node in `find ${CPATH}`;
+do
+        PREVSTAT=0;
+        for icmd in `seq 1 ${ARGC}`;
+        do
+                if [ -z "${ARGV[$icmd]}" ] || [ $PREVSTAT != 0 ];then
+                        break
+                fi
+                if `echo "${ARGV[$icmd]}" | grep -q "@1"`;then
+                        #echo "   ${ARGV[$icmd]}" | sed 's,@1,'"${node}"',g'
+                        `echo "   ${ARGV[$icmd]}" | sed 's,@1,'"${node}"',g'`
+                else
+                        #echo "   | ${ARGV[$icmd]} $node|"
+                        ${ARGV[$icmd]} $node
+                fi
+                PREVSTAT=$?
+                echo " "
+
+        done
+done
+
