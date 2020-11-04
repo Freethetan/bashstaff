@@ -1,0 +1,2 @@
+# bashstaff
+Bash useful scripts
